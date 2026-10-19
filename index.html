@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sorry King - From Shreya</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Montserrat:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet"> <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            royal: {
+              900: '#060814',
+              800: '#0d122b',
+              700: '#151d45',
+            },
+            gold: {
+              light: '#fff2a3',
+              DEFAULT: '#d4af37',
+              dark: '#aa7c11',
+              glow: '#ffdf00',
+            }
+          },
+          fontFamily: {
+            cinzel: ['Cinzel', 'serif'],
+            playfair: ['Playfair Display', 'serif'],
+            sans: ['Montserrat', 'sans-serif'],
+          },
+          boxShadow: {
+            'gold-glow': '0 0 25px rgba(212, 175, 55, 0.4)',
+            'gold-glow-lg': '0 0 50px rgba(212, 175, 55, 0.6)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #04050d;
+      color: #f3f4f6;
+      overflow-x: hidden;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    /* Particle Background Canvas */
+    #particle-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .royal-gradient {
+      background: radial-gradient(circle at center, rgba(21, 29, 69, 0.85) 0%, rgba(13, 18, 43, 0.95) 70%, rgba(4, 5, 13, 1) 100%);
+    }
+
+    /* Metallic Gold Text Shader Effect */
+    .gold-text-gradient {
+      background: linear-gradient(135deg, #fff2a3 0%, #d4af37 40%, #aa7c11 70%, #ffd700 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0px 2px 12px rgba(212, 175, 55, 0.35));
+    }/* Crown Float & Glow Animation */
+    @keyframes crownFloat {
+      0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+        filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.6));
+      }
+      50% {
+        transform: translateY(-12px) rotate(1.5deg);
+        filter: drop-shadow(0 0 35px rgba(255, 223, 0, 0.9));
+      }
+    }
+
+    .animate-crown {
+      animation: crownFloat 4s ease-in-out infinite;
+    }
+
+    /* Card Glass Effect */
+    .card-glass {
+      background: rgba(13, 18, 43, 0.65);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(212, 175, 55, 0.25);
+    }
+
+    .card-glass:hover {
+      border-color: rgba(212, 175, 55, 0.5);
+    }
+
+    /* Pulsing Light Glow */
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(1.08); }
+    }
+
+    .glow-bg {
+      animation: pulseGlow 6s infinite ease-in-out;
+    }
+
+    /* Equalizer Sound Waves Animation */
+    @keyframes barBounce {
+      0%, 100% { height: 6px; }
+      50% { height: 28px; }
+    }
+
+    .eq-bar {
+      width: 4px;
+      background: linear-gradient(to top, #aa7c11, #ffd700);
+      border-radius: 2px;
+      display: inline-block;
+    }
+
+    .eq-bar.playing {
+      animation: barBounce 1.2s infinite ease-in-out;
+    }
+
+    .eq-bar:nth-child(1) { animation-delay: 0.1s; }
+    .eq-bar:nth-child(2) { animation-delay: 0.3s; }
+    .eq-bar:nth-child(3) { animation-delay: 0.5s; }
+    .eq-bar:nth-child(4) { animation-delay: 0.2s; }
+    .eq-bar:nth-child(5) { animation-delay: 0.4s; }
+  </style>
+</head>
+<body class="min-h-screen royal-gradient flex flex-col justify-between relative selection:bg-gold selection:text-royal-900">
+
+  <!-- Particle Background Canvas -->
+  <canvas id="particle-canvas"></canvas>
+
+  <!-- Ambient Glow Effects -->
+  <div class="fixed top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] sm:w-[650px] h-[320px] sm:h-[650px] bg-gold-dark/10 rounded-full blur-[130px] pointer-events-none glow-bg"></div>
+
+  <!-- Header / Navigation Bar -->
+  <header class="relative z-10 w-full px-6 py-6 flex justify-between items-center max-w-6xl mx-auto">
+    <div class="flex items-center gap-2">
+      <i class="fa-solid fa-crown text-gold text-xl"></i>
+      <span class="font-cinzel tracking-widest text-xs sm:text-sm text-gold-light/80 uppercase">Royal Decree</span>
+    </div>
+    
+    <!-- Copy Live URL Button -->
+    <button id="copy-link-btn" class="px-4 py-2 text-xs sm:text-sm font-cinzel rounded-full border border-gold/40 bg-royal-800/60 hover:bg-gold hover:text-royal-900 transition-all duration-300 text-gold flex items-center gap-2 backdrop-blur-md shadow-lg hover:shadow-gold-glow">
+      <i class="fa-regular fa-copy"></i>
+      <span>Copy Web Link</span>
+    </button>
+  </header>
+
+  <!-- Main Hero & Royal Content -->
+  <main class="relative z-10 my-auto px-4 py-8 flex flex-col items-center justify-center text-center max-w-3xl mx-auto w-full">
+    
+    <!-- Crown Icon Graphic -->
+    <div class="relative mb-4 cursor-pointer group" id="crown-trigger" title="Tap for royal grace">
+      <div class="absolute inset-0 bg-gold/20 rounded-full blur-xl group-hover:bg-gold/40 transition-all duration-500"></div>
+      <svg class="w-24 h-24 sm:w-32 sm:h-32 text-gold animate-crown relative z-10 filter drop-shadow-lg" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/>
+      </svg>
+    </div>
+
+    <!-- Subheading 1: From Shreya -->
+    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gold/10 border border-gold/30 text-gold-light text-xs sm:text-sm font-cinzel tracking-widest uppercase mb-3">
+      <i class="fa-solid fa-heart text-gold text-xs"></i>
+      <span>It's from Shreya</span>
+      <i class="fa-solid fa-heart text-gold text-xs"></i>
+    </div>
+
+    <!-- Main Header -->
+    <h1 class="font-cinzel text-5xl sm:text-7xl md:text-8xl font-black tracking-wider uppercase mb-3 gold-text-gradient leading-tight">
+      SORRY KING
+    </h1>
+
+    <!-- Subheading 2: Custom Playful Apology -->
+    <p class="font-playfair italic text-lg sm:text-2xl text-gold-light/90 mb-6">
+      "Again sorry, ajeebo ke PhD holder!"
+    </p>
+
+    <div class="w-28 h-0.5 bg-gradient-to-r from-transparent via-gold to-transparent mb-8"></div>
+
+    <!-- 1. Music Player Card ("Stay" by King) -->
+    <div class="card-glass rounded-2xl p-5 sm:p-6 w-full mb-8 shadow-xl relative overflow-hidden text-left">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        
+        <div class="flex items-center gap-4 w-full sm:w-auto">
+          <!-- Music Icon Art -->
+          <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-gold-dark/40 to-royal-900 border border-gold/40 flex items-center justify-center shrink-0 shadow-md">
+            <i class="fa-solid fa-music text-gold text-2xl"></i>
+          </div>
+          
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-cinzel text-gold tracking-widest uppercase">Special Track</span>
+              <span class="text-[10px] bg-gold/20 text-gold-light px-2 py-0.5 rounded-full font-sans">King</span>
+            </div>
+            <h2 class="font-cinzel text-lg sm:text-xl font-bold text-white">"Stay" — King</h2>
+            <p class="text-xs text-slate-400 font-sans italic mt-0.5">"Kis duniya mein rehti hai... But I want you to stay"</p>
+          </div>
+        </div>
+
+        <!-- Equalizer & Audio Controls -->
+        <div class="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end border-t sm:border-t-0 border-gold/10 pt-3 sm:pt-0">
+          
+          <!-- Animated Equalizer Bars -->
+          <div class="flex items-end gap-1 h-7 px-2">
+            <span class="eq-bar playing"></span>
+            <span class="eq-bar playing"></span>
+            <span class="eq-bar playing"></span>
+            <span class="eq-bar playing"></span>
+            <span class="eq-bar playing"></span>
+          </div>
+
+          <!-- Direct Track Trigger / YouTube Link -->
+          <a href="https://www.youtube.com/results?search_query=stay+king" target="_blank" rel="noopener noreferrer" class="px-4 py-2 rounded-lg bg-gold/20 hover:bg-gold hover:text-royal-900 border border-gold/40 text-gold text-xs font-cinzel font-semibold transition-all duration-300 flex items-center gap-2 shrink-0">
+            <i class="fa-solid fa-circle-play text-sm"></i>
+            <span>Listen on YT</span>
+          </a>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 2. Interactive Unrolling Royal Scroll Card -->
+    <div class="card-glass rounded-2xl p-6 sm:p-10 w-full shadow-2xl relative overflow-hidden transition-all duration-500 transform hover:scale-[1.01]">
+      <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-gold/60 to-transparent"></div>
+      
+      <!-- Initial Subtitle -->
+      <p class="font-playfair text-base sm:text-xl text-slate-200 italic mb-6 leading-relaxed">
+        "A royal declaration of sincere regret, sealed with warmth and honor."
+      </p>
+
+      <!-- Scroll Reveal Trigger Container -->
+      <div id="revelation-container" class="transition-all duration-500">
+        <p class="text-xs sm:text-sm text-slate-400 mb-6 font-sans">
+          I deeply regret any misunderstandings. Tap below to unroll the full decree.
+        </p>
+
+        <button id="reveal-btn" class="relative group px-8 py-4 rounded-xl font-cinzel text-sm sm:text-base font-semibold tracking-wider text-royal-900 bg-gradient-to-r from-gold-light via-gold to-gold-dark hover:from-white hover:to-gold-light shadow-gold-glow hover:shadow-gold-glow-lg transition-all duration-300 transform active:scale-95">
+          <span class="relative z-10 flex items-center justify-center gap-2">
+            <i class="fa-solid fa-scroll"></i>
+            Unroll Royal Apology Decree
+          </span>
+        </button>
+      </div>
+
+      <!-- Hidden Scroll Message (Revealed on Click) -->
+      <div id="apology-letter" class="hidden opacity-0 transform translate-y-4 transition-all duration-700 ease-out text-left mt-4 border-t border-gold/20 pt-6">
+        <div class="space-y-4 text-slate-300 text-sm sm:text-base leading-relaxed font-sans">
+          <p class="font-cinzel text-gold font-bold text-lg">Your Majesty,</p>
+          <p>
+            I am writing this to humbly ask for your forgiveness. No misunderstandings or silly mistakes should ever stand in the way of acknowledging when one is wrong.
+          </p>
+          <p>
+            You hold a special place of honor, and causing any disappointment or strain was never my intention. To my favorite <i>"ajeebo ke PhD holder"</i>, I value our bond far above any minor grievances.
+          </p>
+          <p class="italic text-gold-light/90 font-playfair text-base">
+            "Forgiveness is the supreme attribute of the noble and strong."
+          </p>
+          <p>
+            I hope you can accept this heartfelt apology and restore peace in the realm.
+          </p>
+          <p class="font-cinzel text-gold font-semibold pt-2">
+            Yours sincerely,<br>
+            <span class="text-white">Shreya</span>
+          </p>
+        </div>
+
+        <!-- Royal Forgiveness Interactive Response -->
+        <div class="mt-8 border-t border-gold/10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p class="text-xs text-gold/70 font-cinzel tracking-wider uppercase">Bestow Forgiveness?</p>
+          <div class="flex gap-3 w-full sm:w-auto">
+            <button id="forgive-btn" class="flex-1 sm:flex-none px-6 py-2.5 rounded-lg bg-gold/20 hover:bg-gold text-gold hover:text-royal-900 border border-gold/40 text-xs sm:text-sm font-cinzel font-bold transition-all duration-300">
+              <i class="fa-solid fa-check mr-1.5"></i> Forgiven! 👑
+            </button>
+            <button id="think-btn" class="flex-1 sm:flex-none px-6 py-2.5 rounded-lg bg-royal-800/80 hover:bg-royal-700 text-slate-400 text-xs sm:text-sm font-cinzel transition-all duration-300">
+              Still thinking... 🤔
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Interactive Forgiveness Banner -->
+    <div id="pardon-banner" class="hidden mt-6 w-full p-4 rounded-xl bg-gold/10 border border-gold/40 backdrop-blur-md text-gold font-cinzel text-center animate-bounce">
+      <p class="text-sm sm:text-base font-bold">🎉 Royal Forgiveness Granted! Peace is restored in the realm! 👑</p>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="relative z-10 w-full py-6 text-center text-xs font-cinzel text-slate-500 tracking-widest border-t border-gold/10">
+    Crafted with Care by Shreya • <span class="text-gold/80">Sorry King</span>
+  </footer>
+
+  <!-- Toast Notification Popup -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+    <div class="bg-royal-800 border border-gold text-gold px-5 py-3 rounded-xl shadow-gold-glow flex items-center gap-3">
+      <i class="fa-solid fa-circle-check text-lg"></i>
+      <span id="toast-message" class="text-xs font-cinzel font-semibold tracking-wider">Web Link Copied to Clipboard!</span>
+    </div>
+  </div>
+
+  <!-- JavaScript Logic for Particle Canvas & Interactive Elements -->
+  <script>
+    // --- Floating Animated Gold Stars/Particles Background ---
+    const canvas = document.getElementById('particle-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let particlesArray = [];
+    const numberOfParticles = 65;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+      constructor() {
+        this.reset();
+      }
+
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2.5 + 0.5;
+        this.speedX = (Math.random() - 0.5) * 0.3;
+        this.speedY = -Math.random() * 0.6 - 0.1;
+        this.opacity = Math.random() * 0.7 + 0.3;
+        this.pulse = Math.random() * 0.02 + 0.005;
+        this.color = Math.random() > 0.3 ? '#d4af37' : '#fff2a3';
+      }
+
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.opacity += Math.sin(Date.now() * this.pulse) * 0.01;
+
+        if (this.y < 0 || this.x < 0 || this.x > canvas.width) {
+          this.reset();
+          this.y = canvas.height + 10;
+        }
+      }
+
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0.1, Math.min(1, this.opacity));
+        ctx.fillStyle = this.color;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = '#ffd700';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    function initParticles() {
+      particlesArray = [];
+      for (let i = 0; i < numberOfParticles; i++) {
+        particlesArray.push(new Particle());
+      }
+    }
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particlesArray.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animateParticles);
+    }
+
+    initParticles();
+    animateParticles();
+
+    // --- Interactive Logic ---
+
+    // 1. Reveal Apology Scroll
+    const revealBtn = document.getElementById('reveal-btn');
+    const revelationContainer = document.getElementById('revelation-container');
+    const apologyLetter = document.getElementById('apology-letter');
+
+    revealBtn.addEventListener('click', () => {
+      revelationContainer.classList.add('hidden');
+      apologyLetter.classList.remove('hidden');
+      
+      setTimeout(() => {
+        apologyLetter.classList.remove('opacity-0', 'translate-y-4');
+      }, 50);
+
+      burstParticles();
+    });
+
+    // 2. Crown Trigger Click Effect
+    const crownTrigger = document.getElementById('crown-trigger');
+    crownTrigger.addEventListener('click', () => {
+      burstParticles();
+      showToast("👑 A royal nod of grace!");
+    });
+
+    // 3. Forgiveness Buttons
+    const forgiveBtn = document.getElementById('forgive-btn');
+    const thinkBtn = document.getElementById('think-btn');
+    const pardonBanner = document.getElementById('pardon-banner');
+
+    forgiveBtn.addEventListener('click', () => {
+      forgiveBtn.disabled = true;
+      forgiveBtn.classList.add('opacity-50', 'cursor-not-allowed');
+      pardonBanner.classList.remove('hidden');
+      burstParticles();
+      showToast("Forgiveness granted! Peace is restored.");
+    });
+
+    thinkBtn.addEventListener('click', () => {
+      showToast("Take all the time you need, Your Grace.");
+    });
+
+    // Burst Particle Burst Effect
+    function burstParticles() {
+      for (let i = 0; i < 25; i++) {
+        let p = new Particle();
+        p.x = window.innerWidth / 2 + (Math.random() - 0.5) * 300;
+        p.y = window.innerHeight / 2 + (Math.random() - 0.5) * 300;
+        p.speedY = -Math.random() * 2 - 1;
+        p.size = Math.random() * 3.5 + 1;
+        particlesArray.push(p);
+      }
+      setTimeout(() => {
+        particlesArray.splice(numberOfParticles);
+      }, 3000);
+    }
+
+    // 4. Copy Web Link Functionality
+    const copyLinkBtn = document.getElementById('copy-link-btn');
+    
+    copyLinkBtn.addEventListener('click', () => {
+      const currentUrl = window.location.href;
+      
+      const dummy = document.createElement('input');
+      document.body.appendChild(dummy);
+      dummy.value = currentUrl;
+      dummy.select();
+      
+      try {
+        document.execCommand('copy');
+        showToast("Web Link Copied to Clipboard!");
+      } catch (err) {
+        showToast("Unable to copy link automatically.");
+      }
+      
+      document.body.removeChild(dummy);
+    });
+
+    // 5. Toast Notification System
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toast-message');
+    let toastTimeout;
+
+    function showToast(msg) {
+      toastMessage.textContent = msg;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3500);
+    }
+  </script>
+</body>
+</html>
